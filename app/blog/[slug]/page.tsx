@@ -10,10 +10,11 @@ export const dynamic = 'force-dynamic'
 export default async function BlogDetailPage({
   params,
 }: {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }) {
+  const { slug } = await params
   const blog = await prisma.blog.findUnique({
-    where: { slug: params.slug, published: true },
+    where: { slug, published: true },
     include: {
       category: true,
       media: {

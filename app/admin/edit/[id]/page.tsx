@@ -5,10 +5,11 @@ import { BlogForm } from '@/components/BlogForm'
 export default async function EditBlogPage({
   params,
 }: {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }) {
+  const { id } = await params
   const blog = await prisma.blog.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: {
       media: true,
       attachments: true,

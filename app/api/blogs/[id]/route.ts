@@ -3,23 +3,24 @@ import { prisma } from '@/lib/prisma'
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const body = await req.json()
     const { title, slug, content, excerpt, coverImage, categoryId, published, media, attachments } = body
 
     // 删除旧的媒体和附件
     await prisma.media.deleteMany({
-      where: { blogId: params.id },
+      where: { blogId: id },
     })
     await prisma.attachment.deleteMany({
-      where: { blogId: params.id },
+      where: { blogId: id },
     })
 
     // 更新博客
     const blog = await prisma.blog.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         title,
         slug,
@@ -56,11 +57,12 @@ export async function PUT(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     await prisma.blog.delete({
-      where: { id: params.id },
+      where: { id },
     })
 
     return NextResponse.json({ success: true })
